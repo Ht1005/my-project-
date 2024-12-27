@@ -1,0 +1,23 @@
+npm install @gusdk/erc721-basic
+import { ERC721Basic, ERC721Basic__factory} from "@gusdk/erc721-basic"
+import {BigNumber, ethers, Wallet} from "ethers"
+
+const provider = new ethers.providers.JsonRpcProvider({
+    url: 'https://sandbox1.japanopenchain.org:8545/'
+  })
+
+// use the concrete contract factory if you need to operate on the bytecode (ie. deploy)
+async function deployTestToken(ownerPK: string): Promise<ERC721Basic> {
+    const owner = new Wallet(ownerPK, provider);
+    return new ERC721Basic__factory(owner).deploy(
+        "TEST123",
+        "TEST123",
+    );
+}
+
+// to call existing contracts, a factory for both the concrete contract and for the interface
+// can be used since the ABI is the same
+async function getTokenBalance(walletAddress: string, tokenAddress: string): Promise<BigNumber> {
+    const token = ERC721Basic__factory.connect(tokenAddress, provider);
+    return token.balanceOf(walletAddress);
+}
